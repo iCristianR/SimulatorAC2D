@@ -9,24 +9,27 @@ height, width = 200, 200
 def initial_state():
     pUrban = 0.09 / 1000
     pRural = 1.0 - pUrban
-    # np.random.seed(0)
     temp = np.random.choice((0,1), size=(height, width), p=(pRural, pUrban))
     
-    # Establecer algunas celdas iniciales como 
-    temp[20:50, 20:60] = 2
-    # Establecer algunas celdas iniciales como ríos
+    # Establecer algunas celdas iniciales como no habitables
+    temp[20:50, 20:60] = 3
     temp[130:160,:150] = 3
+    temp[60:90,150:180] = 3
 
     return temp
 
 def transition(C, N):
     q = C
     
-    # Regla: Si ya estoy muy urbanizado
-    if N.count(1) >= 4:
+    # Regla: Si ya estoy muy urbanizado, creo ruta de acceso
+    if N.count(1) > 4:
         q = 0
+        
+    # Regla: Si tengo 4 vecinos, me vuelvo zona productiva
+    elif C == 1 and N.count(1) == 4:
+        q = 2
     
-    # Regla: Si tengo al menos 1 vecino urbanizado
+    # Regla: Si tengo al menos 1 vecino urbanizado, me urbanizo
     elif C == 0 and N.count(1) == 1:
         q = 1
     
@@ -77,7 +80,12 @@ G = initial_state()
 
 fig_animation = plt.figure(figsize = (8, 8), dpi = 100)
 plt.title('Expansión Urbana')
-cmap_animation = ListedColormap(['white', 'black', 'orange', 'blue'])
+# Colors: 
+    # Amarillo: No urbano
+    # Naranja: Urbano
+    # Azul: Productivo
+    # Verde: Inhabitable
+cmap_animation = ListedColormap([(1,1,0.75), (1,0.5,0.49), (0.45,0.7,1), (0.6,0.98,0.6)])
 im = plt.imshow(G, cmap = cmap_animation)
 plt.xticks([]) 
 plt.yticks([])

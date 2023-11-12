@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 from matplotlib.animation import FuncAnimation
 from matplotlib.colors import ListedColormap
 
@@ -20,14 +21,22 @@ def initial_state():
     return temp
 
 def transition(C, N):
-    # Regla: Si no tengo vecinos urbanizados, permanezco vacío
-    if C == 0 and N.count(1) == 0:  
-        return 0
-    # Regla: Si tengo al menos 1 vecino urbanizado
-    elif C == 0 and N.count(1) == 1:
-        return 1
-    else:
-        return C
+    q = C
+
+    # Regla: Si tengo 1 vecino urbanizado, probabilidad baja de urbanizarme
+    if C == 0 and N.count(1) == 1:
+        if random.random() < 0.3:
+            q = 1
+        else:
+            q =  0
+    # Regla: Si tengo 2+ vecinos urbanizados, probabilidad media de urbanizarme
+    elif C == 0 and N.count(1) >= 2 and N.count(1) <= 4: 
+        if random.random() < 0.6:
+            q = 1
+        else:
+            q =  0
+            
+    return q
 
 def apply_rules():
     temp = np.zeros((height, width), dtype=int)
